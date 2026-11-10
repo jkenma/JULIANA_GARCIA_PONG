@@ -9,9 +9,67 @@ public class PlayerController : MonoBehaviour
     public float limitBottom;//Bottom Limit of de paddle´s movement
     public bool useArrowkey = false;
 
+    public bool IA;
+    public GameObject ball;
+
+    public float IAFollowTolerance = 0.25f;
     void Update()
     {
-        MovePaddle();
+        if (IA == false)
+        {
+            MovePaddle();
+        }
+        else
+        {
+            MovePaddleIA();
+        }
+    }
+    void MovePaddleIA()
+    {
+        int direction = 0;
+        float diference = ball.transform.position.y - transform.position.y;
+        if (diference > IAFollowTolerance)
+        {
+            direction = 1;
+        }
+        else if (diference < IAFollowTolerance)
+        {
+            direction = -1;
+        }
+
+        float direccion = 0f;
+        if (useArrowkey == true)
+        {
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                direccion = 1f;
+            }
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                direccion = -1f;
+            }
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.W))
+            {
+                direccion = 1f;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                direccion = -1f;
+            }
+        }
+        float newY = this.gameObject.transform.position.y + (direction * moveSpeed * Time.deltaTime);
+        if (newY > limitTop)
+        {
+            newY = limitTop;
+        }
+        if (newY < limitBottom)
+        {
+            newY = limitBottom;
+        }
+        transform.position = new Vector3(transform.position.x, newY,transform.position.z);
     }
     void MovePaddle()
     {
@@ -19,12 +77,12 @@ public class PlayerController : MonoBehaviour
     }
     float ConstraintPaddle()
     {
-        float newY = this.gameObject.transform.position.y + (PaddleDirection() * moveSpeed * Time.deltaTime); 
-        if (newY > limitTop) 
+        float newY = this.gameObject.transform.position.y + (PaddleDirection() * moveSpeed * Time.deltaTime);
+        if (newY > limitTop)
         {
             newY = limitTop;
         }
-        if (newY < limitBottom) 
+        if (newY < limitBottom)
         {
             newY = limitBottom;
         }
